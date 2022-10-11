@@ -3,7 +3,7 @@
 # Bankers algorithm
 
 INPUT : 
-    5
+    		5
 		0
 		7
 		1
@@ -120,7 +120,7 @@ INPUT :
       
 # CPU SCHEDULING ALGORITHMS
 
-    INPUT : 
+INPUT : 
         5
         4
         0
