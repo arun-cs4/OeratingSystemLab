@@ -139,6 +139,7 @@ INPUT :
         2
 
     OUTPUT :
+    
         FCFS
         ----
 
