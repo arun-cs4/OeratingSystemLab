@@ -1,0 +1,358 @@
+/*
+    TO  IMPLEMENT CPU SCHEDULING ALGORITHMS
+    ARUN C S
+    IDK19CS015
+    INPUT : 
+        5
+        4
+        0
+        1
+        3
+        0
+        2
+        7
+        6
+        1
+        4
+        11
+        3
+        2
+        12
+        2
+
+    OUTPUT :
+        FCFS
+        ----
+
+        PID 	 RESPONCE TIME 	 COMPLETION TIME 	 TURNAROUND TIME 	 WAITING TIME
+        ___ 	 _____________ 	 _______________ 	 _______________ 	 ____________
+        P1   	 0      	  4             	  4      	         0
+        P2   	 4      	  7             	  7      	         4
+        P3   	 1      	  14             	  8      	         1
+        P4   	 3      	  18             	  7      	         3
+        P5   	 6      	  20             	  8      	         6
+
+        AVERAGE RESPONCE TIME     : 2.800000
+        AVERAGE COMPLETION TIME   : 12.600000
+        AVERAGE TURNAROUND TIME   : 6.800000
+        AVERAGE WAITING TIME      : 2.800000
+
+        sjf
+        ---
+
+        PID 	 RESPONCE TIME 	 COMPLETION TIME 	 TURNAROUND TIME 	 WAITING TIME
+        ___ 	 _____________ 	 _______________ 	 _______________ 	 ____________
+        P1   	 3      	  7             	  7      	         3
+        P2   	 0      	  3             	  3      	         0
+        P3   	 1      	  14             	  8      	         1
+        P4   	 5      	  20             	  9      	         5
+        P5   	 2      	  16             	  4      	         2
+
+        AVERAGE RESPONCE TIME     : 2.200000
+        AVERAGE COMPLETION TIME   : 12.000000
+        AVERAGE TURNAROUND TIME   : 6.200000
+        AVERAGE WAITING TIME      : 2.200000
+
+        PRIORITY
+        --------
+
+        PID 	 RESPONCE TIME 	 COMPLETION TIME 	 TURNAROUND TIME 	 WAITING TIME
+        ___ 	 _____________ 	 _______________ 	 _______________ 	 ____________
+        P1   	 0      	  4             	  4      	         0
+        P2   	 4      	  7             	  7      	         4
+        P3   	 1      	  14             	  8      	         1
+        P4   	 5      	  20             	  9      	         5
+        P5   	 2      	  16             	  4      	         2
+
+        AVERAGE RESPONCE TIME     : 2.400000
+        AVERAGE COMPLETION TIME   : 12.200000
+        AVERAGE TURNAROUND TIME   : 6.400000
+        AVERAGE WAITING TIME      : 2.400000
+
+        ROUND ROBIN
+        -----------
+
+        PID 	 RESPONCE TIME 	 COMPLETION TIME 	 TURNAROUND TIME 	 WAITING TIME
+        ___ 	 _____________ 	 _______________ 	 _______________ 	 ____________
+        P1   	 0      	  10             	  10      	         6
+        P2   	 1      	  6             	  6      	         3
+        P3   	 0      	  20             	  14      	         7
+        P4   	 0      	  17             	  6      	         2
+        P5   	 0      	  15             	  3      	         1
+
+        AVERAGE RESPONCE TIME     : 0.200000
+        AVERAGE COMPLETION TIME   : 13.600000
+        AVERAGE TURNAROUND TIME   : 7.800000
+        AVERAGE WAITING TIME      : 3.800000
+*/
+
+#include<stdio.h>
+struct performance_parameters
+{
+    int rt;
+    int ct;
+    int tt;
+    int wt;
+};
+//function to read inputs
+void readInputs(int n,int *bsum,int arr[][5])
+{
+    for(int i=0;i<n;i++)
+    {
+        printf("enter details of process %d\n",(i+1));
+        printf("enter burst time\n");
+        scanf("%d",&arr[i][0]);
+        printf("enter arrival time\n");
+        scanf("%d",&arr[i][1]);
+        arr[i][2]=1;
+        arr[i][3]=0;
+        printf("enter priority\n");
+        scanf("%d",&arr[i][4]);
+        *bsum=*bsum+arr[i][0];
+    }
+}
+//function to calculate execution sequence and perfoemance parameteres of fcfs
+void fcfs(int n,int arr[][5],struct performance_parameters pp[])
+{
+    printf("FCFS\n----\n");
+    int first,small,l=0,systime=0,k=0;
+    first=0;//variable used to refer the process, which is to be executed first in each iteration in the for loop
+    for(int i=0;i<n;++i)
+    {
+        small=100;//variable used to compare the arrival time of processes
+        for(int j=0;j<n;++j)
+        {
+            if ((arr[j][2] != 0)&&(arr[j][1]<=systime))
+            {
+                if(arr[j][1]<small)
+                {
+                    small=arr[j][1];
+                    first=j;
+                }
+                l=1;
+            }
+        }
+        if(l==1)
+        {
+            if(k==0)
+            {
+                k=1;
+                systime=arr[first][1];
+            }
+            arr[first][2]=0;
+            //printf("executing process %d\n",(first+1));
+            pp[first].rt=systime-arr[first][1];
+            pp[first].ct=systime+arr[first][0];
+            pp[first].tt=pp[first].ct-arr[first][1];
+            pp[first].wt=systime-arr[first][1];
+            systime=systime+arr[first][0];
+            l=0;
+        }
+        else
+        {
+            systime=systime+1;
+            i--;
+        }
+    }
+}
+//function to calculate execution sequence and perfoemance parameteres of sjf
+void sjf(int n,int arr[][5],struct performance_parameters pp[])
+{
+    printf("sjf\n---\n");
+	int first,small,l=0,systime=0,k=0;
+    first=0;//variable used to refer the process, which is to be executed first in each iteration in thefor loop
+    for(int i=0;i<n;++i)
+    {
+        small=100;//variable used to compare the BURST time of processes
+        for(int j=0;j<n;++j)
+        {
+            if ((arr[j][2] != 0)&&(arr[j][1]<=systime))
+            {
+                if(arr[j][0]<small)
+                {
+                    small=arr[j][0];
+                    first=j;
+                }
+                l=1;
+            }
+        }
+        if(l==1)
+        {
+            if(k==0)
+            {
+                k=1;
+                systime=arr[first][1];
+            }
+            arr[first][2]=0;
+            //printf("executing process %d\n",(first+1));
+            pp[first].rt=systime-arr[first][1];
+            pp[first].ct=systime+arr[first][0];
+            pp[first].tt=pp[first].ct-arr[first][1];
+            pp[first].wt=systime-arr[first][1];
+            systime=systime+arr[first][0];
+            l=0;
+        }
+        else
+        {
+            systime=systime+1;
+            i--;
+        }
+	}
+}
+//function to calculate execution sequence and perfoemance parameteres of priority
+void priority(int n,int arr[][5],struct performance_parameters pp[])
+{
+    printf("PRIORITY\n--------\n");
+    int first,small,l=0,systime=0,k=0;
+    first=0;//variable used to refer the process, which is to be executed first in each iteration in thefor loop
+    for(int i=0;i<n;++i)
+    {
+        small=100;//variable used to compare the priority of processes
+        for(int j=0;j<n;++j)
+        {
+            if ((arr[j][2] != 0)&&(arr[j][1]<=systime))
+            {
+                if(arr[j][4]<small)
+                {
+                    small=arr[j][4];
+                    first=j;
+                }
+                l=1;
+            }
+        }
+        if(l==1)
+        {
+            if(k==0)
+            {
+                k=1;
+                systime=arr[first][1];
+            }
+            arr[first][2]=0;
+            //printf("executing process %d\n",(first+1));
+            pp[first].rt=systime-arr[first][1];
+            pp[first].ct=systime+arr[first][0];
+            pp[first].tt=pp[first].ct-arr[first][1];
+            pp[first].wt=systime-arr[first][1];
+            systime=systime+arr[first][0];
+            l=0;
+        }
+        else
+        {
+            systime=systime+1;
+            i--;
+        }
+    }
+}
+//function to calculate execution sequence and perfoemance parameteresof round robin
+void rr(int n,int bsum,int arr[][5],struct performance_parameters pp[])
+{
+    printf("ROUND ROBIN\n-----------\n");
+    int first,small,l=0,systime=0,k=0;
+    first=0;
+    for(int i=0;i<bsum;++i)
+    {
+        small=100;
+        for(int j=0;j<n;++j)
+        {
+            if ((arr[j][2] != 0)&&(arr[j][1]<=systime))
+            {
+                if(arr[j][3]<small)
+                {
+                    small=arr[j][3];
+                    first=j;
+                }
+                l=1;
+            }
+        }
+        if(l==1)
+        {
+            if(k==0)
+            {
+                k=1;
+                systime=arr[first][1];
+            }
+            //printf("executing process %d\n",(first+1));
+            arr[first][3]=arr[first][3]+1;
+            arr[first][0]=arr[first][0]-1;
+            if(arr[first][0]<=0)
+            {
+                arr[first][2]=0;
+                if(arr[first][0]<0)
+                {
+                    pp[first].ct=systime;
+                }
+                else
+                {
+                    pp[first].ct=systime+1;
+                }
+                pp[first].tt=pp[first].ct-arr[first][1];
+                pp[first].wt=pp[first].tt-arr[first][3];
+            }
+            if(arr[first][3]==1)
+            {
+                pp[first].rt=systime-arr[first][1];
+            }
+            systime=systime+1;
+            l=0;
+        }
+        else
+        {
+            systime=systime+1;
+            i--;
+        }
+    }
+}
+//function to print the result
+void printResult(int n,struct performance_parameters pp[])
+{
+    printf("\n");
+	float rtsum=0,ctsum=0,ttsum=0,wtsum=0;
+	printf("PID \t RESPONCE TIME \t COMPLETION TIME \t TURNAROUND TIME \t WAITING TIME\n");
+    printf("___ \t _____________ \t _______________ \t _______________ \t ____________\n");
+    for(int i=0;i<n;++i)
+    {
+        printf("P%d   \t %d      \t  %d             \t  %d      \t         %d",i+1,pp[i].rt,pp[i].ct,pp[i].tt,pp[i].wt);
+        printf("\n");
+        rtsum=rtsum+pp[i].rt;
+        ctsum=ctsum+pp[i].ct;
+        ttsum=ttsum+pp[i].tt;
+        wtsum=wtsum+pp[i].wt;
+    }
+    printf("\nAVERAGE RESPONCE TIME     : %f\n",(rtsum/n));
+    printf("AVERAGE COMPLETION TIME   : %f\n",(ctsum/n));
+    printf("AVERAGE TURNAROUND TIME   : %f\n",(ttsum/n));
+    printf("AVERAGE WAITING TIME      : %f\n",(wtsum/n));
+    printf("\n");
+}
+void main()
+{
+    int n;
+    int bsum=0;//sum of burst times of all processes
+    printf("enter the number of processes\n");
+    scanf("%d",&n);
+    int arr[n][5];
+    //arr[x][0] used to store burst time
+    //arr[x][1] used to store arrival time
+    //arr[x][2] initially set to 1 for all processes and set to 0 if the process is choosen to execute
+    //arr[x][3] initially set to 0, used to count the number of times CPU allocated for the process
+    //arr[x][4] used to store priority
+    readInputs(n,&bsum,arr);
+    struct performance_parameters ppfcfs[n];
+    fcfs(n,arr,ppfcfs);
+    printResult(n,ppfcfs);
+    for(int a=0;a<n;a++)
+        arr[a][2]=1;
+    struct performance_parameters ppsjf[n];
+    sjf(n,arr,ppsjf);
+    printResult(n,ppsjf);
+    for(int a=0;a<n;a++)
+        arr[a][2]=1;
+    struct performance_parameters pppriority[n];
+    priority(n,arr,pppriority);
+    printResult(n,pppriority);
+    for(int a=0;a<n;a++)
+        arr[a][2]=1;
+    struct performance_parameters pprr[n];
+    rr(n,bsum,arr,pprr);
+    printResult(n,pprr);
+}
