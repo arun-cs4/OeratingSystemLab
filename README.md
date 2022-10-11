@@ -203,3 +203,36 @@ INPUT :
         AVERAGE COMPLETION TIME   : 13.600000
         AVERAGE TURNAROUND TIME   : 7.800000
         AVERAGE WAITING TIME      : 3.800000
+	
+	
+# DISK SCHEDULING ALGORITHMS
+
+INPUT :
+		4
+		50
+		30
+		70
+		100
+		40
+		100
+		
+	OUTPUT :
+	
+		FCFS
+		executing request at position 50
+		executing request at position 30
+		executing request at position 70
+		executing request at position 100
+		total seek time is : 100
+		SCAN
+		executing request at position 50
+		executing request at position 70
+		executing request at position 100
+		executing request at position 30
+		total seek time is : 130
+		CSCAN
+		executing request at position 50
+		executing request at position 70
+		executing request at position 100
+		executing request at position 30
+		total seek time is : 90
